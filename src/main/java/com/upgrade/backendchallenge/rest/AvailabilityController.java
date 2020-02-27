@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.upgrade.backendchallenge.dto.DayAvailabilityDTO;
 import com.upgrade.backendchallenge.model.DayAvailability;
 import com.upgrade.backendchallenge.service.DayAvailabilityService;
 
@@ -26,17 +25,17 @@ public class AvailabilityController {
 	private DayAvailabilityService dayAvailabilityService;
 
 	@GetMapping("/")
-	public ResponseEntity<List<DayAvailabilityDTO>> get(
+	public ResponseEntity<List<DayAvailability>> get(
 			@RequestParam("startDate") @DateTimeFormat(pattern = DayAvailability.ID_PATTERN) Date startDate,
 			@RequestParam("endDate") @DateTimeFormat(pattern = DayAvailability.ID_PATTERN) Date endDate) {
 
-		List<DayAvailabilityDTO> availabilities = new ArrayList<DayAvailabilityDTO>();
+		List<DayAvailability> availabilities = new ArrayList<DayAvailability>();
 
 		this.dayAvailabilityService
 				.get(startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
 						endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
-				.stream().forEach(da -> availabilities.add(new DayAvailabilityDTO(da)));
-		return new ResponseEntity<List<DayAvailabilityDTO>>(availabilities, HttpStatus.OK);
+				.stream().forEach(da -> availabilities.add(new DayAvailability(da.toString())));
+		return new ResponseEntity<List<DayAvailability>>(availabilities, HttpStatus.OK);
 	}
 
 }

@@ -9,8 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.upgrade.backendchallenge.dto.ReservationDTO;
-
 @Entity
 @Table(name = "reservations")
 public class Reservation implements Serializable {
@@ -18,7 +16,7 @@ public class Reservation implements Serializable {
 	private static final long serialVersionUID = 5613572157908329904L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private long id;
 
 	@Column
@@ -38,14 +36,6 @@ public class Reservation implements Serializable {
 
 	public Reservation() {
 
-	}
-
-	public Reservation(ReservationDTO dto) {
-		this.email = dto.getEmail();
-		this.fullName = dto.getFullName();
-		this.numberOfPeople = dto.getNumberOfPeople();
-		this.startDate = dto.getStartDate().toString();
-		this.endDate = dto.getEndDate().toString();
 	}
 
 	public long getId() {

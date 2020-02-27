@@ -1,5 +1,6 @@
 package com.upgrade.backendchallenge.service;
 
+import java.sql.BatchUpdateException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +8,11 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
-import com.upgrade.backendchallenge.dto.ReservationDTO;
 import com.upgrade.backendchallenge.exception.ReservationException;
 import com.upgrade.backendchallenge.model.DayAvailability;
 import com.upgrade.backendchallenge.model.Reservation;
@@ -26,10 +29,9 @@ public class ReservationService {
 	private DayAvailabilityService dayAvailabilityService;
 
 	@Transactional
-	public long create(ReservationDTO dto) {
-		ReservationValidator.validateReservation(dto);
-
-		Reservation reservation = new Reservation(dto);
+	@Retryable(value = {BatchUpdateException.class, DataIntegrityViolationException.class, ObjectOptimisticLockingFailureException.class}, maxAttempts = 5)
+	public long create(Reservation reservation) {
+		ReservationValidator.validateReservation(reservation);
 
 		List<DayAvailability> availabilities = createAvailabilties(reservation);
 
@@ -69,9 +71,9 @@ public class ReservationService {
 	}
 
 	@Transactional
-	public void edit(long reservationId, ReservationDTO dto) {
-		ReservationValidator.validateReservation(dto);
-		Reservation reservation = new Reservation(dto);
+	@Retryable(value = {BatchUpdateException.class, DataIntegrityViolationException.class, ObjectOptimisticLockingFailureException.class}, maxAttempts = 5)
+	public void edit(long reservationId, Reservation reservation) {
+		ReservationValidator.validateReservation(reservation);
 
 		Reservation oldReservation = this.get(reservationId);
 		oldReservation.setNumberOfPeople(-oldReservation.getNumberOfPeople());
@@ -79,7 +81,8 @@ public class ReservationService {
 		List<DayAvailability> newAvailabilities = createAvailabilties(reservation);
 		List<DayAvailability> oldAvailabilities = createAvailabilties(oldReservation);
 
-		this.dayAvailabilityService.updateAvailability(this.dayAvailabilityService.mergeAvailabilities(oldAvailabilities, newAvailabilities));
+		this.dayAvailabilityService.updateAvailability(
+				this.dayAvailabilityService.mergeAvailabilities(oldAvailabilities, newAvailabilities));
 
 		oldReservation.setEmail(reservation.getEmail());
 		oldReservation.setFullName(reservation.getFullName());

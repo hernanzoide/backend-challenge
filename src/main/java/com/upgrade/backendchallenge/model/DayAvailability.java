@@ -10,8 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import com.upgrade.backendchallenge.dto.DayAvailabilityDTO;
-
 @Entity
 @Table(name = "availabilities")
 public class DayAvailability implements Serializable {
@@ -24,13 +22,12 @@ public class DayAvailability implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 
-
 	@Column(unique = true)
 	private String day;
 
 	@Column
 	private int occupancy;
-	
+
 	@Version
 	private int version;
 
@@ -40,12 +37,6 @@ public class DayAvailability implements Serializable {
 	public DayAvailability(String date) {
 		this.day = date.toString();
 		this.occupancy = 0;
-	}
-
-	public DayAvailability(DayAvailabilityDTO dto) {
-		this.id = dto.getId();
-		this.day = dto.getDay().toString();
-		this.occupancy = dto.getOccupancy();
 	}
 
 	public long getId() {

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.upgrade.backendchallenge.dto.ReservationDTO;
 import com.upgrade.backendchallenge.exception.ReservationException;
 import com.upgrade.backendchallenge.model.Reservation;
 import com.upgrade.backendchallenge.service.ReservationService;
@@ -38,14 +37,14 @@ public class ReservationController {
 
 	@PutMapping("/{reservationId}")
 	public ResponseEntity<Reservation> editReservation(@PathVariable("reservationId") long reservationId,
-			@RequestBody ReservationDTO reservation) {
+			@RequestBody Reservation reservation) {
 
 		this.reservationService.edit(reservationId, reservation);
 		return new ResponseEntity<Reservation>(HttpStatus.OK);
 	}
 
 	@PostMapping("/")
-	public ResponseEntity<Long> createReservation(@RequestBody ReservationDTO reservation) {
+	public ResponseEntity<Long> createReservation(@RequestBody Reservation reservation) {
 
 		return new ResponseEntity<Long>(this.reservationService.create(reservation), HttpStatus.OK);
 	}
