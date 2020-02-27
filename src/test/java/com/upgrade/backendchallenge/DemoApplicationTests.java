@@ -3,7 +3,6 @@ package com.upgrade.backendchallenge;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
@@ -34,7 +33,7 @@ import com.upgrade.backendchallenge.model.DayAvailability;
 @TestMethodOrder(MethodOrderer.Alphanumeric.class)
 class DemoApplicationTests {
 
-	private static final int RESERVATION_THREADS = 200;
+	private static final int RESERVATION_THREADS = 400;
 	private static final String HOST = "http://localhost:";
 	private static final String RESERVATION_ENDPOINT = "/reservation/";
 	private static final String AVAILABILITY_ENDPOINT = "/availability/";
@@ -64,14 +63,14 @@ class DemoApplicationTests {
 		ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(RESERVATION_ENDPOINT), entity, String.class);
 		assertTrue(response.getStatusCode().is2xxSuccessful());
 		
-		String reservationId = response.getBody();
+		int reservationId = Integer.valueOf(response.getBody());
 		
 		HttpEntity<String> entityRetrieve = new HttpEntity<String>(null, headers);
 		response = restTemplate.exchange(
 				createURLWithPort(RESERVATION_ENDPOINT+reservationId), HttpMethod.GET, entityRetrieve,
 				String.class);
 		JSONObject body = new JSONObject(response.getBody());
-		assertEquals(reservationId,body.get("id").toString());
+		assertEquals(reservationId,body.get("id"));
 	}
 
 	@Test
@@ -108,6 +107,7 @@ class DemoApplicationTests {
 				new ParameterizedTypeReference<List<DayAvailability>>() {
         });
 		for (DayAvailability dayAvailability : response.getBody()) {
+			System.out.println(dayAvailability.getDay()+":"+dayAvailability.getOccupancy());
 			assertTrue(dayAvailability.getOccupancy()<=MAX_OCCUPANCY);
 		}
 	}
@@ -142,9 +142,15 @@ class DemoApplicationTests {
 	 * @return
 	 */
 	public static String randomString() {
-	    byte[] array = new byte[7];
-	    new Random().nextBytes(array);
-	    return new String(array, Charset.forName("UTF-8"));
+		int leftLimit = 97; // letter 'a'
+	    int rightLimit = 122; // letter 'z'
+	    int targetStringLength = 10;
+	    Random random = new Random();
+	 
+	    return random.ints(leftLimit, rightLimit + 1)
+	      .limit(targetStringLength)
+	      .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+	      .toString();
 	}
 	
 	

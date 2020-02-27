@@ -1,31 +1,51 @@
 package com.upgrade.backendchallenge.model;
 
-import java.time.LocalDate;
+import java.io.Serializable;
 
-import com.cloudant.client.api.model.Document;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import com.upgrade.backendchallenge.dto.DayAvailabilityDTO;
 
-public class DayAvailability extends Document {
-	
-    public static final String ID_PATTERN = "yyyy-MM-dd";
+@Entity
+@Table(name = "availabilities")
+public class DayAvailability implements Serializable {
 
-	private LocalDate day;
-	
+	private static final long serialVersionUID = 5229707468017041496L;
+
+	public static final String ID_PATTERN = "yyyy-MM-dd";
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
+
+
+	@Column(unique = true)
+	private String day;
+
+	@Column
 	private int occupancy;
-	
+
 	public DayAvailability() {
 	}
-	
-	public DayAvailability(LocalDate date) {
-		this.setId(date.toString());
-		this.day = date;
+
+	public DayAvailability(String date) {
+		this.day = date.toString();
 		this.occupancy = 0;
 	}
-	
+
 	public DayAvailability(DayAvailabilityDTO dto) {
-		this.setId(dto.getId());
-		this.setRevision(dto.getRev());
+		this.id = dto.getId();
+		this.day = dto.getDay().toString();
 		this.occupancy = dto.getOccupancy();
+	}
+
+	public long getId() {
+		return id;
 	}
 
 	public int getOccupancy() {
@@ -35,9 +55,9 @@ public class DayAvailability extends Document {
 	public void setOccupancy(int occupancy) {
 		this.occupancy = occupancy;
 	}
-	
-	public LocalDate getDay() {
+
+	public String getDay() {
 		return day;
 	}
-	
+
 }

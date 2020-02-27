@@ -1,35 +1,37 @@
 package com.upgrade.backendchallenge.dto;
 
+import java.time.LocalDate;
+
 import com.upgrade.backendchallenge.model.DayAvailability;
 
 public class DayAvailabilityDTO {
 
-	private String _id;
-	
-	private String _rev;
-	
+	private long id;
+
+	private LocalDate day;
+
 	private int occupancy;
-	
+
 	public DayAvailabilityDTO(DayAvailability dayAvailability) {
-		this._id = dayAvailability.getId();
-		this._rev = dayAvailability.getRevision();
+		this.id = dayAvailability.getId();
+		this.day = LocalDate.parse(dayAvailability.getDay());
 		this.occupancy = dayAvailability.getOccupancy();
 	}
 
-	public String getId() {
-		return _id;
+	public long getId() {
+		return id;
 	}
 
-	public void setId(String _id) {
-		this._id = _id;
+	public void setId(long _id) {
+		this.id = _id;
 	}
 
-	public String getRev() {
-		return _rev;
+	public LocalDate getDay() {
+		return day;
 	}
 
-	public void setRev(String _rev) {
-		this._rev = _rev;
+	public void setDay(LocalDate day) {
+		this.day = day;
 	}
 
 	public int getOccupancy() {
@@ -39,5 +41,5 @@ public class DayAvailabilityDTO {
 	public void setOccupancy(int occupancy) {
 		this.occupancy = occupancy;
 	}
-	
+
 }

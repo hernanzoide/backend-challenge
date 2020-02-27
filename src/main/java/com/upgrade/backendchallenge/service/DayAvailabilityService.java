@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.upgrade.backendchallenge.exception.ReservationException;
 import com.upgrade.backendchallenge.model.DayAvailability;
 import com.upgrade.backendchallenge.repository.DayAvailabilityRepository;
 
@@ -22,21 +21,48 @@ public class DayAvailabilityService {
 	private DayAvailabilityRepository dayAvailabilityRepository;
 
 	public List<DayAvailability> get(LocalDate startDate, LocalDate endDate) {
-		return this.dayAvailabilityRepository.get(startDate.toString(),endDate.toString());
+		return this.dayAvailabilityRepository.findByDayBetween(startDate.toString(), endDate.toString());
 	}
 
 	public synchronized void updateAvailability(List<DayAvailability> newAvailabilities) {
-		List<DayAvailability> updatedAvailabilities = new ArrayList<DayAvailability>();
-		DayAvailability updatedAvailability;
-		for (DayAvailability availability : newAvailabilities) {
-			updatedAvailability = (this.dayAvailabilityRepository.contains(availability.getId())
-					? this.dayAvailabilityRepository.get(availability.getId())
-					: new DayAvailability(availability.getDay()));
-			if (availability.getOccupancy() + updatedAvailability.getOccupancy() > this.max_occupancy)
-				throw new ReservationException("Occupancy rate exceeded");
-			updatedAvailability.setOccupancy(availability.getOccupancy() + updatedAvailability.getOccupancy());
-			updatedAvailabilities.add(updatedAvailability);
+		List<DayAvailability> savedAvailabilities = this.dayAvailabilityRepository.findByDayBetween(newAvailabilities.get(0).getDay(), newAvailabilities.get(newAvailabilities.size()-1).getDay());
+		
+		this.dayAvailabilityRepository.saveAll(this.mergeAvailabilities(savedAvailabilities, newAvailabilities));
+	}
+	
+	public List<DayAvailability> mergeAvailabilities(List<DayAvailability> oldAvailabilities,
+			List<DayAvailability> newAvailabilities) {
+		List<DayAvailability> mergedAvailabilities = new ArrayList<DayAvailability>();
+		int newIndex = 0;
+		int oldIndex = 0;
+
+		while (newIndex < newAvailabilities.size() && oldIndex < oldAvailabilities.size()) {
+			if (newAvailabilities.get(newIndex).getDay().compareTo(oldAvailabilities.get(oldIndex).getDay()) == 0) {
+				DayAvailability merged = new DayAvailability(newAvailabilities.get(newIndex).getDay());
+				merged.setOccupancy(newAvailabilities.get(newIndex).getOccupancy()
+						+ oldAvailabilities.get(oldIndex).getOccupancy());
+				mergedAvailabilities.add(merged);
+				newIndex++;
+				oldIndex++;
+			} else {
+				if (newAvailabilities.get(0).getDay().compareTo(oldAvailabilities.get(0).getDay()) < 0) {
+					mergedAvailabilities.add((newAvailabilities.get(newIndex)));
+					newIndex++;
+				} else {
+					mergedAvailabilities.add(oldAvailabilities.get(oldIndex));
+					oldIndex++;
+				}
+			}
 		}
-		this.dayAvailabilityRepository.createOrUpdateAll(updatedAvailabilities);
+		while (newIndex < newAvailabilities.size()) {
+			mergedAvailabilities.add(newAvailabilities.get(newIndex));
+			newIndex++;
+		}
+		while (oldIndex < oldAvailabilities.size()) {
+			mergedAvailabilities.add(oldAvailabilities.get(oldIndex));
+			oldIndex++;
+		}
+
+		return mergedAvailabilities;
 	}
 }

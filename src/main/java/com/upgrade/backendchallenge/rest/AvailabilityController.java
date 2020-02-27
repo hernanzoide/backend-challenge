@@ -21,18 +21,21 @@ import com.upgrade.backendchallenge.service.DayAvailabilityService;
 @RestController
 @RequestMapping("/availability/")
 public class AvailabilityController {
-	
+
 	@Autowired
 	private DayAvailabilityService dayAvailabilityService;
-	
+
 	@GetMapping("/")
-    public ResponseEntity<List<DayAvailabilityDTO>> get(@RequestParam("startDate") @DateTimeFormat(pattern=DayAvailability.ID_PATTERN) Date startDate,
-    		@RequestParam("endDate") @DateTimeFormat(pattern=DayAvailability.ID_PATTERN) Date endDate) {
-		
+	public ResponseEntity<List<DayAvailabilityDTO>> get(
+			@RequestParam("startDate") @DateTimeFormat(pattern = DayAvailability.ID_PATTERN) Date startDate,
+			@RequestParam("endDate") @DateTimeFormat(pattern = DayAvailability.ID_PATTERN) Date endDate) {
+
 		List<DayAvailabilityDTO> availabilities = new ArrayList<DayAvailabilityDTO>();
 
-		this.dayAvailabilityService.get(startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
-			.stream().forEach(da -> availabilities.add(new DayAvailabilityDTO(da)));
+		this.dayAvailabilityService
+				.get(startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+						endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+				.stream().forEach(da -> availabilities.add(new DayAvailabilityDTO(da)));
 		return new ResponseEntity<List<DayAvailabilityDTO>>(availabilities, HttpStatus.OK);
 	}
 

@@ -25,44 +25,43 @@ public class ReservationController {
 
 	@Autowired
 	private ReservationService reservationService;
-	
+
 	@GetMapping("/{reservationId}")
-    public ResponseEntity<Reservation> get(@PathVariable("reservationId") String reservationId) {
-		
+	public ResponseEntity<Reservation> get(@PathVariable("reservationId") long reservationId) {
+
 		Reservation reservation = this.reservationService.get(reservationId);
 		return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
 	}
-	
+
 	@PutMapping("/{reservationId}")
-    public ResponseEntity<Reservation> editReservation(@PathVariable("reservationId") String reservationId,
-    		@RequestBody ReservationDTO reservation) {
-		
-		this.reservationService.edit(reservationId,reservation);
+	public ResponseEntity<Reservation> editReservation(@PathVariable("reservationId") long reservationId,
+			@RequestBody ReservationDTO reservation) {
+
+		this.reservationService.edit(reservationId, reservation);
 		return new ResponseEntity<Reservation>(HttpStatus.OK);
 	}
-	
+
 	@PostMapping("/")
-    public ResponseEntity<String> createReservation(@RequestBody ReservationDTO reservation) {
-		
-		return new ResponseEntity<String>(this.reservationService.create(reservation),HttpStatus.OK);
+	public ResponseEntity<Long> createReservation(@RequestBody ReservationDTO reservation) {
+
+		return new ResponseEntity<Long>(this.reservationService.create(reservation), HttpStatus.OK);
 	}
-	
+
 	@DeleteMapping("/{reservationId}")
-    public ResponseEntity<Reservation> delete(@PathVariable("reservationId") String reservationId) {
-		
+	public ResponseEntity<Reservation> delete(@PathVariable("reservationId") long reservationId) {
+
 		this.reservationService.delete(reservationId);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
-	
-    @ExceptionHandler(ReservationException.class)
-    public ResponseEntity<?> handleReservationException(ReservationException exc) {
-        return ResponseEntity.badRequest().body(exc.getMessage());
-    }
-    
-    @ExceptionHandler(NoDocumentException.class)
-    public ResponseEntity<?> handleDocumentNotFound(NoDocumentException exc) {
-        return ResponseEntity.badRequest().body("Reservation does not exist: "+exc.getMessage());
-    }
-   
-}
 
+	@ExceptionHandler(ReservationException.class)
+	public ResponseEntity<?> handleReservationException(ReservationException exc) {
+		return ResponseEntity.badRequest().body(exc.getMessage());
+	}
+
+	@ExceptionHandler(NoDocumentException.class)
+	public ResponseEntity<?> handleDocumentNotFound(NoDocumentException exc) {
+		return ResponseEntity.badRequest().body("Reservation does not exist: " + exc.getMessage());
+	}
+
+}

@@ -4,20 +4,20 @@ import java.time.LocalDate;
 
 public class ReservationDTO {
 
-private String _id;
-	
+	private String _id;
+
 	private String _rev;
 
 	private String fullName;
-	
+
 	private String email;
-	
+
 	private int numberOfPeople;
-	
+
 	private LocalDate startDate;
-	
+
 	private LocalDate endDate;
-	
+
 	public String getId() {
 		return _id;
 	}
@@ -73,6 +73,5 @@ private String _id;
 	public void setEndDate(LocalDate endDate) {
 		this.endDate = endDate;
 	}
-	
-}
 
+}

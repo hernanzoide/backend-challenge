@@ -1,32 +1,55 @@
 package com.upgrade.backendchallenge.model;
 
-import java.time.LocalDate;
+import java.io.Serializable;
 
-import com.cloudant.client.api.model.Document;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import com.upgrade.backendchallenge.dto.ReservationDTO;
 
-public class Reservation extends Document {
+@Entity
+@Table(name = "reservations")
+public class Reservation implements Serializable {
 
+	private static final long serialVersionUID = 5613572157908329904L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
+
+	@Column
 	private String fullName;
-	
+
+	@Column
 	private String email;
-	
+
+	@Column
 	private int numberOfPeople;
-	
-	private LocalDate startDate;
-	
-	private LocalDate endDate;
+
+	@Column
+	private String startDate;
+
+	@Column
+	private String endDate;
 
 	public Reservation() {
-		
+
 	}
-	
+
 	public Reservation(ReservationDTO dto) {
 		this.email = dto.getEmail();
 		this.fullName = dto.getFullName();
 		this.numberOfPeople = dto.getNumberOfPeople();
-		this.startDate = dto.getStartDate();
-		this.endDate = dto.getEndDate();
+		this.startDate = dto.getStartDate().toString();
+		this.endDate = dto.getEndDate().toString();
+	}
+
+	public long getId() {
+		return id;
 	}
 
 	public String getFullName() {
@@ -53,20 +76,20 @@ public class Reservation extends Document {
 		this.numberOfPeople = numberOfPeople;
 	}
 
-	public LocalDate getStartDate() {
+	public String getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(LocalDate startDate) {
+	public void setStartDate(String startDate) {
 		this.startDate = startDate;
 	}
 
-	public LocalDate getEndDate() {
+	public String getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(LocalDate endDate) {
+	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
-	
+
 }
