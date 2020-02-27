@@ -1,24 +1,23 @@
 package com.upgrade.backendchallenge.model;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 
 import com.cloudant.client.api.model.Document;
 import com.upgrade.backendchallenge.dto.DayAvailabilityDTO;
 
 public class DayAvailability extends Document {
 	
-	public static final String ID_PATTERN = "yyyy-MM-dd";
-	
-	private Date day;
+    public static final String ID_PATTERN = "yyyy-MM-dd";
+
+	private LocalDate day;
 	
 	private int occupancy;
 	
 	public DayAvailability() {
 	}
 	
-	public DayAvailability(Date date) {
-		this.setId(DayAvailability.getDayAvailavilityId(date));
+	public DayAvailability(LocalDate date) {
+		this.setId(date.toString());
 		this.day = date;
 		this.occupancy = 0;
 	}
@@ -37,12 +36,7 @@ public class DayAvailability extends Document {
 		this.occupancy = occupancy;
 	}
 	
-	public static String getDayAvailavilityId(Date date) {
-		SimpleDateFormat format = new SimpleDateFormat(DayAvailability.ID_PATTERN);
-		return format.format(date);
-	}
-
-	public Date getDay() {
+	public LocalDate getDay() {
 		return day;
 	}
 	

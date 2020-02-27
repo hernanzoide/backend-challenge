@@ -1,6 +1,6 @@
 package com.upgrade.backendchallenge.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class ReservationDTO {
 
@@ -14,9 +14,9 @@ private String _id;
 	
 	private int numberOfPeople;
 	
-	private Date startDate;
+	private LocalDate startDate;
 	
-	private Date endDate;
+	private LocalDate endDate;
 	
 	public String getId() {
 		return _id;
@@ -58,19 +58,19 @@ private String _id;
 		this.numberOfPeople = numberOfPeople;
 	}
 
-	public Date getStartDate() {
+	public LocalDate getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(LocalDate startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getEndDate() {
+	public LocalDate getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(LocalDate endDate) {
 		this.endDate = endDate;
 	}
 	

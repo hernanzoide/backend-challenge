@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.Charset;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -27,7 +27,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.upgrade.backendchallenge.dto.ReservationDTO;
 import com.upgrade.backendchallenge.model.DayAvailability;
-import com.upgrade.backendchallenge.util.DateUtils;
 
 
 @ExtendWith(SpringExtension.class)
@@ -55,9 +54,9 @@ class DemoApplicationTests {
 		ReservationDTO dto = new ReservationDTO();
 		dto.setEmail("test@gmail.com");
 		dto.setFullName("Fuller Namaste");
-		Date d1 = DateUtils.addDay(new Date());
+		LocalDate d1 = LocalDate.now().plusDays(1);
 		dto.setStartDate(d1);
-		Date d2 = DateUtils.addDay(DateUtils.addDay(d1));
+		LocalDate d2 = d1.plusDays(1);
 		dto.setEndDate(d2);
 		dto.setNumberOfPeople(1);
 		
@@ -101,8 +100,8 @@ class DemoApplicationTests {
 	@Test
 	public void testOccupancyLimit() throws Exception {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(createURLWithPort(AVAILABILITY_ENDPOINT))
-		        .queryParam("startDate", DayAvailability.getDayAvailavilityId(DateUtils.addDay(new Date())))
-		        .queryParam("endDate", DayAvailability.getDayAvailavilityId(DateUtils.addMonth(new Date())));
+		        .queryParam("startDate", LocalDate.now().plusDays(1).toString())
+		        .queryParam("endDate", LocalDate.now().plusMonths(1).toString());
 		
 		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
 		ResponseEntity<List<DayAvailability>> response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, entity, 
@@ -130,9 +129,9 @@ class DemoApplicationTests {
 		ReservationDTO dto = new ReservationDTO();
 		dto.setEmail(DemoApplicationTests.randomString());
 		dto.setFullName(DemoApplicationTests.randomString());
-		Date d1 = DateUtils.addDay(DemoApplicationTests.randomDate());
+		LocalDate d1 = DemoApplicationTests.randomLocalDate();
 		dto.setStartDate(d1);
-		Date d2 = DateUtils.addDay(DateUtils.addDay(d1));
+		LocalDate d2 = d1.plusDays(2);
 		dto.setEndDate(d2);
 		dto.setNumberOfPeople(ThreadLocalRandom.current().nextInt(1, 3 + 1));
 		return dto;
@@ -150,11 +149,13 @@ class DemoApplicationTests {
 	
 	
 	/**
-	 * Create random Date for reservation. On purpose date can be out of scope for reservation restrictions.
+	 * Create random LocalDate for reservation. On purpose date can be out of scope for reservation restrictions.
 	 * @return
 	 */
-	public static Date randomDate() {
-		return new Date(ThreadLocalRandom.current().nextLong((DateUtils.addDay(new Date())).getTime(), (DateUtils.addMonth(new Date())).getTime()));
+	public static LocalDate randomLocalDate() {
+	    long minDay = LocalDate.now().plusDays(1).toEpochDay();
+	    long maxDay = LocalDate.now().plusMonths(1).toEpochDay();
+	    long randomDay = ThreadLocalRandom.current().nextLong(minDay, maxDay);
+	    return LocalDate.ofEpochDay(randomDay);
 	}
-	
 }

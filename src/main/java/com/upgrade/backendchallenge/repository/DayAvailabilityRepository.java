@@ -1,7 +1,7 @@
 package com.upgrade.backendchallenge.repository;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,16 +32,16 @@ public class DayAvailabilityRepository {
 		reservation.setRevision(response.getRev());
 	}
 	
-	public DayAvailability get(Date date) {
-		return dayAvailabilityDatabase.find(DayAvailability.class,DayAvailability.getDayAvailavilityId(date));
+	public DayAvailability get(LocalDate date) {
+		return dayAvailabilityDatabase.find(DayAvailability.class,date.toString());
 	}
 	
 	public DayAvailability get(String id) {
 		return dayAvailabilityDatabase.find(DayAvailability.class,id);
 	}
 	
- 	public boolean contains(Date date) {
-		return dayAvailabilityDatabase.contains(DayAvailability.getDayAvailavilityId(date));
+ 	public boolean contains(LocalDate date) {
+		return dayAvailabilityDatabase.contains(date.toString());
 	}
  	
  	public boolean contains(String id) {

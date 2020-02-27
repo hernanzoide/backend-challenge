@@ -1,5 +1,6 @@
 package com.upgrade.backendchallenge.rest;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,7 +30,8 @@ public class AvailabilityController {
     		@RequestParam("endDate") @DateTimeFormat(pattern=DayAvailability.ID_PATTERN) Date endDate) {
 		
 		List<DayAvailabilityDTO> availabilities = new ArrayList<DayAvailabilityDTO>();
-		this.dayAvailabilityService.get(startDate,endDate)
+
+		this.dayAvailabilityService.get(startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
 			.stream().forEach(da -> availabilities.add(new DayAvailabilityDTO(da)));
 		return new ResponseEntity<List<DayAvailabilityDTO>>(availabilities, HttpStatus.OK);
 	}

@@ -1,7 +1,7 @@
 package com.upgrade.backendchallenge.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,26 +14,27 @@ import com.upgrade.backendchallenge.repository.DayAvailabilityRepository;
 
 @Component
 public class DayAvailabilityService {
-	
+
 	@Value("${island.max_occupancy}")
 	private int max_occupancy;
-	
+
 	@Autowired
 	private DayAvailabilityRepository dayAvailabilityRepository;
 
-	public List<DayAvailability> get(Date startDate, Date endDate) {
-		return this.dayAvailabilityRepository.get(DayAvailability.getDayAvailavilityId(startDate),DayAvailability.getDayAvailavilityId(endDate));
+	public List<DayAvailability> get(LocalDate startDate, LocalDate endDate) {
+		return this.dayAvailabilityRepository.get(startDate.toString(),endDate.toString());
 	}
 
-	public synchronized void updateAvailability(List<DayAvailability> newAvailabilities){
+	public synchronized void updateAvailability(List<DayAvailability> newAvailabilities) {
 		List<DayAvailability> updatedAvailabilities = new ArrayList<DayAvailability>();
-	    DayAvailability updatedAvailability;
+		DayAvailability updatedAvailability;
 		for (DayAvailability availability : newAvailabilities) {
-			updatedAvailability = (this.dayAvailabilityRepository.contains(availability.getId()) ? 
-					this.dayAvailabilityRepository.get(availability.getId()) : new DayAvailability(availability.getDay()));
-			if (availability.getOccupancy()+updatedAvailability.getOccupancy()>this.max_occupancy)
+			updatedAvailability = (this.dayAvailabilityRepository.contains(availability.getId())
+					? this.dayAvailabilityRepository.get(availability.getId())
+					: new DayAvailability(availability.getDay()));
+			if (availability.getOccupancy() + updatedAvailability.getOccupancy() > this.max_occupancy)
 				throw new ReservationException("Occupancy rate exceeded");
-			updatedAvailability.setOccupancy(availability.getOccupancy()+updatedAvailability.getOccupancy());
+			updatedAvailability.setOccupancy(availability.getOccupancy() + updatedAvailability.getOccupancy());
 			updatedAvailabilities.add(updatedAvailability);
 		}
 		this.dayAvailabilityRepository.createOrUpdateAll(updatedAvailabilities);

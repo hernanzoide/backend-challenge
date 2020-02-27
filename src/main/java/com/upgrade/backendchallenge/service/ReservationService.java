@@ -1,7 +1,7 @@
 package com.upgrade.backendchallenge.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,6 @@ import com.upgrade.backendchallenge.dto.ReservationDTO;
 import com.upgrade.backendchallenge.model.DayAvailability;
 import com.upgrade.backendchallenge.model.Reservation;
 import com.upgrade.backendchallenge.repository.ReservationRepository;
-import com.upgrade.backendchallenge.util.DateUtils;
 import com.upgrade.backendchallenge.util.ReservationValidator;
 
 @Component
@@ -39,12 +38,12 @@ public class ReservationService {
 	private List<DayAvailability> createAvailabilties(Reservation reservation) {
 		List<DayAvailability> availabilities = new ArrayList<DayAvailability>();
 		DayAvailability availability;
-		Date availabilityDate = reservation.getStartDate();
-		while (DateUtils.resetTime(availabilityDate).compareTo(DateUtils.resetTime(reservation.getEndDate()))!=0) {
+		LocalDate availabilityDate = reservation.getStartDate();
+		while (availabilityDate.compareTo(reservation.getEndDate())!=0) {
 			availability = new DayAvailability(availabilityDate);
 			availability.setOccupancy(reservation.getNumberOfPeople());
 			availabilities.add(availability);
-			availabilityDate = DateUtils.addDay(availabilityDate);
+			availabilityDate = availabilityDate.plusDays(1);
 		}
 		return availabilities;
 	}
@@ -94,7 +93,7 @@ public class ReservationService {
 		int oldIndex = 0;
 		
 		while (newIndex<newAvailabilities.size() && oldIndex<oldAvailabilities.size()) {
-			if (DateUtils.resetTime(newAvailabilities.get(newIndex).getDay()).compareTo(DateUtils.resetTime(oldAvailabilities.get(oldIndex).getDay()))==0) {
+			if (newAvailabilities.get(newIndex).getDay().compareTo(oldAvailabilities.get(oldIndex).getDay())==0) {
 				DayAvailability merged = new DayAvailability(newAvailabilities.get(newIndex).getDay());
 				merged.setOccupancy(newAvailabilities.get(newIndex).getOccupancy()+oldAvailabilities.get(oldIndex).getOccupancy());
 				mergedAvailabilities.add(merged);
@@ -102,7 +101,7 @@ public class ReservationService {
 				oldIndex++;
 			}
 			else {
-				if (DateUtils.resetTime(newAvailabilities.get(0).getDay()).compareTo(DateUtils.resetTime(oldAvailabilities.get(0).getDay()))<0) {
+				if (newAvailabilities.get(0).getDay().compareTo(oldAvailabilities.get(0).getDay())<0) {
 					mergedAvailabilities.add((newAvailabilities.get(newIndex)));
 					newIndex++;
 				}
