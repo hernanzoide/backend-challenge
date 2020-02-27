@@ -33,7 +33,7 @@ import com.upgrade.backendchallenge.model.DayAvailability;
 @TestMethodOrder(MethodOrderer.Alphanumeric.class)
 class DemoApplicationTests {
 
-	private static final int RESERVATION_THREADS = 400;
+	private static final int RESERVATION_THREADS = 200;
 	private static final String HOST = "http://localhost:";
 	private static final String RESERVATION_ENDPOINT = "/reservation/";
 	private static final String AVAILABILITY_ENDPOINT = "/availability/";
@@ -107,7 +107,6 @@ class DemoApplicationTests {
 				new ParameterizedTypeReference<List<DayAvailability>>() {
         });
 		for (DayAvailability dayAvailability : response.getBody()) {
-			System.out.println(dayAvailability.getDay()+":"+dayAvailability.getOccupancy());
 			assertTrue(dayAvailability.getOccupancy()<=MAX_OCCUPANCY);
 		}
 	}

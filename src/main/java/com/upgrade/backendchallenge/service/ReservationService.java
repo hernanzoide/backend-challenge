@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +25,7 @@ public class ReservationService {
 	@Autowired
 	private DayAvailabilityService dayAvailabilityService;
 
+	@Transactional
 	public long create(ReservationDTO dto) {
 		ReservationValidator.validateReservation(dto);
 
@@ -48,6 +51,7 @@ public class ReservationService {
 		return availabilities;
 	}
 
+	@Transactional
 	public void delete(long reservationId) {
 		Reservation reservation = this.get(reservationId);
 		reservation.setNumberOfPeople(-reservation.getNumberOfPeople());
@@ -64,6 +68,7 @@ public class ReservationService {
 				.orElseThrow(() -> new ReservationException("Reservation not found. id:" + reservationId));
 	}
 
+	@Transactional
 	public void edit(long reservationId, ReservationDTO dto) {
 		ReservationValidator.validateReservation(dto);
 		Reservation reservation = new Reservation(dto);

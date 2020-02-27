@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.upgrade.backendchallenge.exception.ReservationException;
 import com.upgrade.backendchallenge.model.DayAvailability;
 import com.upgrade.backendchallenge.repository.DayAvailabilityRepository;
 
@@ -24,9 +25,9 @@ public class DayAvailabilityService {
 		return this.dayAvailabilityRepository.findByDayBetween(startDate.toString(), endDate.toString());
 	}
 
-	public synchronized void updateAvailability(List<DayAvailability> newAvailabilities) {
+	
+	public void updateAvailability(List<DayAvailability> newAvailabilities) {
 		List<DayAvailability> savedAvailabilities = this.dayAvailabilityRepository.findByDayBetween(newAvailabilities.get(0).getDay(), newAvailabilities.get(newAvailabilities.size()-1).getDay());
-		
 		this.dayAvailabilityRepository.saveAll(this.mergeAvailabilities(savedAvailabilities, newAvailabilities));
 	}
 	
@@ -38,9 +39,11 @@ public class DayAvailabilityService {
 
 		while (newIndex < newAvailabilities.size() && oldIndex < oldAvailabilities.size()) {
 			if (newAvailabilities.get(newIndex).getDay().compareTo(oldAvailabilities.get(oldIndex).getDay()) == 0) {
-				DayAvailability merged = new DayAvailability(newAvailabilities.get(newIndex).getDay());
+				DayAvailability merged = oldAvailabilities.get(oldIndex);
 				merged.setOccupancy(newAvailabilities.get(newIndex).getOccupancy()
 						+ oldAvailabilities.get(oldIndex).getOccupancy());
+				if (merged.getOccupancy()>this.max_occupancy)
+					throw new ReservationException("Max occupancy exceeded for day: "+merged.getDay());
 				mergedAvailabilities.add(merged);
 				newIndex++;
 				oldIndex++;
@@ -62,7 +65,6 @@ public class DayAvailabilityService {
 			mergedAvailabilities.add(oldAvailabilities.get(oldIndex));
 			oldIndex++;
 		}
-
 		return mergedAvailabilities;
 	}
 }

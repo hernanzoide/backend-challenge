@@ -1,8 +1,12 @@
 package com.upgrade.backendchallenge.rest;
 
+import java.sql.BatchUpdateException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cloudant.client.org.lightcouch.NoDocumentException;
 import com.upgrade.backendchallenge.dto.ReservationDTO;
 import com.upgrade.backendchallenge.exception.ReservationException;
 import com.upgrade.backendchallenge.model.Reservation;
@@ -59,9 +62,22 @@ public class ReservationController {
 		return ResponseEntity.badRequest().body(exc.getMessage());
 	}
 
-	@ExceptionHandler(NoDocumentException.class)
-	public ResponseEntity<?> handleDocumentNotFound(NoDocumentException exc) {
-		return ResponseEntity.badRequest().body("Reservation does not exist: " + exc.getMessage());
+	@ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+	public ResponseEntity<?> handleObjectOptimisticLockingFailureException(
+			ObjectOptimisticLockingFailureException exc) {
+		return ResponseEntity.badRequest()
+				.body("Your reservation could not be processed. Please retry. " + exc.getMessage());
 	}
 
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException exc) {
+		return ResponseEntity.badRequest()
+				.body("Your reservation could not be processed. Please retry. " + exc.getMessage());
+	}
+
+	@ExceptionHandler(BatchUpdateException.class)
+	public ResponseEntity<?> handleBatchUpdateException(BatchUpdateException exc) {
+		return ResponseEntity.badRequest()
+				.body("Your reservation could not be processed. Please retry. " + exc.getMessage());
+	}
 }

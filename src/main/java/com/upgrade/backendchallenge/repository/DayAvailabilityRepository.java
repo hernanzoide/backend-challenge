@@ -11,5 +11,4 @@ import com.upgrade.backendchallenge.model.DayAvailability;
 public interface DayAvailabilityRepository extends CrudRepository<DayAvailability, Long> {
 
 	List<DayAvailability> findByDayBetween(String startDate, String endDate);
-
 }

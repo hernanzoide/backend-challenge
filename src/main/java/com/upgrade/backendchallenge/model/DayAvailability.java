@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import com.upgrade.backendchallenge.dto.DayAvailabilityDTO;
 
@@ -29,6 +30,9 @@ public class DayAvailability implements Serializable {
 
 	@Column
 	private int occupancy;
+	
+	@Version
+	private int version;
 
 	public DayAvailability() {
 	}
@@ -58,6 +62,14 @@ public class DayAvailability implements Serializable {
 
 	public String getDay() {
 		return day;
+	}
+
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
 	}
 
 }
