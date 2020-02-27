@@ -14,6 +14,8 @@ public class DayAvailability extends Document {
 	
 	private int occupancy;
 	
+	public DayAvailability() {
+	}
 	
 	public DayAvailability(Date date) {
 		this.setId(DayAvailability.getDayAvailavilityId(date));
